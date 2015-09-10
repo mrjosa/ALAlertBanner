@@ -30,6 +30,7 @@ typedef enum {
     ALAlertBannerStyleFailure,
     ALAlertBannerStyleNotify,
     ALAlertBannerStyleWarning,
+    ALAlertBannerStyleCustom
 } ALAlertBannerStyle;
 
 typedef enum {
@@ -50,6 +51,8 @@ typedef enum {
 @interface ALAlertBanner : UIView
 
 @property (nonatomic, readonly) ALAlertBannerStyle style;
+@property (nonatomic, strong) UIColor *customColor;
+@property (nonatomic, assign) BOOL flatColor;
 @property (nonatomic, readonly) ALAlertBannerPosition position;
 @property (nonatomic, readonly) ALAlertBannerState state;
 

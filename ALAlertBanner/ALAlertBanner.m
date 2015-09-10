@@ -1,19 +1,19 @@
 /**
  ALAlertBanner.m
-
+ 
  Created by Anthony Lobianco on 8/12/13.
  Copyright (c) 2013 Anthony Lobianco. All rights reserved.
-
+ 
  Permission is hereby granted, free of charge, to any person obtaining a copy of
  this software and associated documentation files (the "Software"), to deal in
  the Software without restriction, including without limitation the rights to
  use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
  the Software, and to permit persons to whom the Software is furnished to do so,
  subject to the following conditions:
-
+ 
  The above copyright notice and this permission notice shall be included in all
  copies or substantial portions of the Software.
-
+ 
  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
  FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
@@ -52,16 +52,16 @@ static CGFloat const kForceHideAnimationDuration = 0.1f;
 
 //macros referenced from MBProgressHUD. cheers to @matej
 #if __IPHONE_OS_VERSION_MIN_REQUIRED >= 70000
-    #define AL_SINGLELINE_TEXT_HEIGHT(text, font) [text length] > 0 ? [text sizeWithAttributes:nil].height : 0.f;
-    #define AL_MULTILINE_TEXT_HEIGHT(text, font, maxSize, mode) [text length] > 0 ? [text boundingRectWithSize:maxSize \
-                                                                                                       options:(NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading) \
-                                                                                                    attributes:nil \
-                                                                                                       context:NULL].size.height : 0.f;
+#define AL_SINGLELINE_TEXT_HEIGHT(text, font) [text length] > 0 ? [text sizeWithAttributes:nil].height : 0.f;
+#define AL_MULTILINE_TEXT_HEIGHT(text, font, maxSize, mode) [text length] > 0 ? [text boundingRectWithSize:maxSize \
+options:(NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading) \
+attributes:nil \
+context:NULL].size.height : 0.f;
 #else
-    #define AL_SINGLELINE_TEXT_HEIGHT(text, font) [text length] > 0 ? [text sizeWithFont:font].height : 0.f;
-    #define AL_MULTILINE_TEXT_HEIGHT(text, font, maxSize, mode) [text length] > 0 ? [text sizeWithFont:font \
-                                                                                     constrainedToSize:maxSize \
-                                                                                         lineBreakMode:mode].height : 0.f;
+#define AL_SINGLELINE_TEXT_HEIGHT(text, font) [text length] > 0 ? [text sizeWithFont:font].height : 0.f;
+#define AL_MULTILINE_TEXT_HEIGHT(text, font, maxSize, mode) [text length] > 0 ? [text sizeWithFont:font \
+constrainedToSize:maxSize \
+lineBreakMode:mode].height : 0.f;
 #endif
 
 # pragma mark -
@@ -104,13 +104,13 @@ static CGFloat const kForceHideAnimationDuration = 0.1f;
 }
 
 + (CGFloat)statusBarHeight {
-	return [UIApplication sharedApplication].statusBarFrame.size.height;
+    return [UIApplication sharedApplication].statusBarFrame.size.height;
 }
 
 @end
 
 @interface ALAlertBanner () {
-    @private
+@private
     ALAlertBannerManager *manager;
 }
 
@@ -146,6 +146,7 @@ static CGFloat const kForceHideAnimationDuration = 0.1f;
     self.alpha = 0.f;
     self.layer.shadowOpacity = 0.5f;
     self.tag = arc4random_uniform(SHRT_MAX);
+    self.flatColor = NO;
     
     [self setupSubviews];
     [self setupInitialValues];
@@ -501,7 +502,7 @@ static CGFloat const kForceHideAnimationDuration = 0.1f;
 # pragma mark -
 # pragma mark Private Methods
 
-- (void)animationDidStop:(CAAnimation *)anim finished:(BOOL)flag {    
+- (void)animationDidStop:(CAAnimation *)anim finished:(BOOL)flag {
     if ([[anim valueForKey:@"anim"] isEqualToString:kShowAlertBannerKey] && flag) {
         [self.delegate alertBannerDidShow:self inView:self.superview];
         self.state = ALAlertBannerStateVisible;
@@ -583,7 +584,7 @@ static CGFloat const kForceHideAnimationDuration = 0.1f;
     CGFloat heightForSelf = titleLabelHeight + subtitleLabelHeight + (self.subtitleLabel.text == nil || self.titleLabel.text == nil ? kMargin*2.f : kMargin*2.5f);
     
     CFTimeInterval boundsAnimationDuration = AL_DEVICE_ANIMATION_DURATION;
-        
+    
     CGRect oldBounds = self.layer.bounds;
     CGRect newBounds = oldBounds;
     newBounds.size = CGSizeMake(self.superview.frame.size.width, heightForSelf);
@@ -625,9 +626,9 @@ static CGFloat const kForceHideAnimationDuration = 0.1f;
     }
 }
 
-- (void)updatePositionAfterRotationWithY:(CGFloat)yPos animated:(BOOL)animated {    
-    CFTimeInterval positionAnimationDuration = kRotationDurationIphone; 
-
+- (void)updatePositionAfterRotationWithY:(CGFloat)yPos animated:(BOOL)animated {
+    CFTimeInterval positionAnimationDuration = kRotationDurationIphone;
+    
     BOOL isAnimating = self.isAnimating;
     CALayer *activeLayer = isAnimating ? (CALayer *)self.layer.presentationLayer : self.layer;
     NSString *currentAnimationKey = nil;
@@ -646,14 +647,14 @@ static CGFloat const kForceHideAnimationDuration = 0.1f;
             currentAnimationKey = kMoveAlertBannerKey;
         } else
             return;
-
+        
         CFTimeInterval remainingAnimationDuration = currentAnimation.duration - (CACurrentMediaTime() - currentAnimation.beginTime);
         timingFunction = currentAnimation.timingFunction;
         positionAnimationDuration = remainingAnimationDuration;
         
         [self.layer removeAnimationForKey:currentAnimationKey];
     }
-
+    
     if (self.state == ALAlertBannerStateHiding || self.state == ALAlertBannerStateMovingBackward) {
         switch (self.position) {
             case ALAlertBannerPositionTop:
@@ -670,7 +671,7 @@ static CGFloat const kForceHideAnimationDuration = 0.1f;
     CGPoint newPos = CGPointMake(oldPos.x, yPos);
     self.layer.position = newPos;
     
-    if (animated) {        
+    if (animated) {
         CABasicAnimation *positionAnimation = [CABasicAnimation animationWithKeyPath:@"position"];
         positionAnimation.fromValue = [NSValue valueWithCGPoint:oldPos];
         positionAnimation.toValue = [NSValue valueWithCGPoint:newPos];
@@ -710,16 +711,27 @@ static CGFloat const kForceHideAnimationDuration = 0.1f;
         case ALAlertBannerStyleWarning:
             fillColor = [UIColor colorWithRed:(211/255.0) green:(209/255.0) blue:(100/255.0) alpha:1.f];
             break;
+        case ALAlertBannerStyleCustom:
+            fillColor = self.customColor;
+            break;
     }
     
-    NSArray *colorsArray = [NSArray arrayWithObjects:(id)[fillColor CGColor], (id)[[fillColor darkerColor] CGColor], nil];
     CGColorSpaceRef colorSpace =  CGColorSpaceCreateDeviceRGB();
-    const CGFloat locations[2] = {0.f, 1.f};
-    CGGradientRef gradient = CGGradientCreateWithColors(colorSpace, (__bridge CFArrayRef)colorsArray, locations);
     
-    CGContextDrawLinearGradient(context, gradient, CGPointZero, CGPointMake(0.f, self.bounds.size.height), 0.f);
+    if (!self.flatColor) {
+        NSArray *colorsArray = [NSArray arrayWithObjects:(id)[fillColor CGColor], (id)[[fillColor darkerColor] CGColor], nil];
+        const CGFloat locations[2] = {0.f, 1.f};
+        CGGradientRef gradient = CGGradientCreateWithColors(colorSpace, (__bridge CFArrayRef)colorsArray, locations);
+        
+        CGContextDrawLinearGradient(context, gradient, CGPointZero, CGPointMake(0.f, self.bounds.size.height), 0.f);
+        
+        CGGradientRelease(gradient);
+    }
+    else {
+        CGContextSetFillColorWithColor(context, fillColor.CGColor);
+        CGContextFillRect(context, CGRectMake(0.0, 0.0, CGRectGetWidth(self.bounds), CGRectGetHeight(self.bounds)));
+    }
     
-    CGGradientRelease(gradient);
     CGColorSpaceRelease(colorSpace);
     
     CGContextSetFillColorWithColor(context, [UIColor colorWithRed:0.f green:0.f blue:0.f alpha:0.6f].CGColor);
